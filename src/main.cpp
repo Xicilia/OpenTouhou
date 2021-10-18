@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <iostream>
 
 std::vector<std::pair<std::string,sf::Color>> Colors {std::make_pair("white",sf::Color(255,255,255,255))};
 
@@ -22,7 +23,8 @@ int main() {
     if (onscyweld.loadFromFile("src/snus.png")) {
         printf("loaded");
     }
-    sf::Sprite sprite(onscyweld);
+    sf::Sprite snusprite(onscyweld);
+    snusprite.scale(sf::Vector2f(2,5));
 
     sf::Clock clock;
 
@@ -32,6 +34,9 @@ int main() {
         return 0;
     }
 
+    bool snus = false;
+
+    sf::String currKeyword;
     while (window.isOpen()) {
         sf::Time elapsedTime = clock.restart();
 
@@ -46,13 +51,33 @@ int main() {
                     DebugMode = !DebugMode;
                     printf("Debug mode value have been changed");
                 }
+            } else if(event.type == sf::Event::TextEntered) {
+                currKeyword += event.text.unicode;
+
+                std::string word = std::string(currKeyword);
+                std::cout<< word <<std::endl;                
+
+                if(currKeyword.find("givemesnus") != sf::String::InvalidPos and !snus) {
+                    printf("snus set to true");
+                    snus = true;
+                    window.setTitle("OpenSnushou");
+                }
+
+                if (currKeyword.getSize() >= 20) {
+                    currKeyword.clear();
+                }
+
+                
+
             }
         }
         sf::Color white = GetColor("white");
         window.clear(white);
 
-        window.draw(sprite);
-
+        //window.draw(sprite);
+        if(snus){
+            window.draw(snusprite);
+        }
         if (DebugMode) {
             int fontsize = 18;
             sf::Vector2u TextSpriteSize = DebugFont.getTexture(fontsize).getSize();
