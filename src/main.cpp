@@ -2,7 +2,115 @@
 #include <vector>
 #include <iostream>
 
+#include "Entity.h"
+
+/*class Player {
+
+    public:
+        float verticalMove;
+        float horizontalMove;
+        bool isShiftPressed;
+        Player(sf::Texture PlayerTexture) {
+            texture = PlayerTexture;
+
+            speed = 0.1f;
+            playerSprite = sf::Sprite(texture);
+            //playerSprite.resize(sf::Vector2f(PLAYERWIDTHCONSTANT,PLAYERHEIGHTCONSTANT));
+            float scaleWidth = PLAYERWIDTHCONSTANT / texture.getSize().x;
+            float scaleHeight = PLAYERHEIGHTCONSTANT / texture.getSize().y;
+            std::cout << "scaling player sprite width with " << scaleWidth << " scale" << std::endl;
+            std::cout << "scaling player sprite height with " << scaleHeight << " scale" << std::endl;
+            playerSprite.scale(sf::Vector2f(scaleWidth, scaleHeight));
+
+            verticalMove = 0;
+            horizontalMove = 0;
+            isShiftPressed = false;
+
+        }
+
+        sf::Vector2f getPlayerPos() {
+            return playerSprite.getPosition();
+        }
+        sf::Vector2f getPlayerSize() {
+            sf::Vector2u textureSize = texture.getSize();
+            sf::Vector2f spriteScale = playerSprite.getScale();
+
+            return sf::Vector2f(textureSize.x * spriteScale.x, textureSize.y * spriteScale.y);
+        }
+        void setPos(sf::Vector2f pos) {
+            playerSprite.setPosition(pos);
+        }
+        sf::Sprite getCurrentSpriteToDraw() {
+            return playerSprite;
+        }
+        void move() {
+
+            verticalMove = -sf::Keyboard::isKeyPressed(sf::Keyboard::Up) + sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
+            horizontalMove = sf::Keyboard::isKeyPressed(sf::Keyboard::Right) + -sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
+            isShiftPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
+
+            float currSpeed;
+            if (isShiftPressed) {
+                currSpeed = speed * 0.5;
+            }
+            else {
+                currSpeed = speed;
+            }
+
+            if (verticalMove) {
+                playerSprite.move(0, currSpeed * verticalMove);
+            }
+            if (horizontalMove) {
+                playerSprite.move(currSpeed * horizontalMove, 0);
+            }
+
+        }
+    private:
+        sf::Texture texture;
+        sf::Sprite playerSprite;
+        sf::IntRect playerRect;
+
+        float speed;
+}; */
+struct Texture {
+    sf::Texture texture;
+    std::string textureId;
+};
+
+struct Board {
+  
+    float x;
+    float y;
+    float width;
+    float height;
+
+};
+
+
+
 std::vector<std::pair<std::string,sf::Color>> Colors {std::make_pair("white",sf::Color(255,255,255,255))};
+
+std::vector<std::pair<std::string,std::string>> texturesToInit{ std::make_pair("snus","src/data/snus.png"),std::make_pair("player","src/data/snus.png") };
+
+std::vector<Texture> initTextures() {
+    
+    std::vector<Texture> textures;
+
+    for (std::pair<std::string, std::string> notInitedTexture : texturesToInit) {
+        sf::Texture textureSRC;
+
+        
+        if (!textureSRC.loadFromFile(notInitedTexture.second)) {
+            continue;
+        }
+
+        Texture currentTexture{ textureSRC,notInitedTexture.first };
+        textures.push_back(currentTexture);
+    }
+
+    return textures;
+
+}
 
 sf::Color GetColor(std::string ColorName) {
     for(std::pair<std::string,sf::Color> Color: Colors) {
@@ -13,18 +121,43 @@ sf::Color GetColor(std::string ColorName) {
     return sf::Color(0,0,0,0); //return black if color does not exist
 }
 
+sf::Texture getTextureById(std::vector<Texture>textureList, std::string Id) {
+    
+    for (Texture currentTexture : textureList) {
+        if (currentTexture.textureId == Id) {
+            return currentTexture.texture;
+        }
+    }
+    Texture NaNtexture;
+    NaNtexture.textureId = "NaN";
+    return NaNtexture.texture;
+
+}
+
 int main() {
     int WindowWidth = 900;
     int WindowHeight = 700;
 
-    sf::RenderWindow window(sf::VideoMode(WindowWidth, WindowHeight), "OpenTouhou",sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(WindowWidth, WindowHeight), "OpenTouhou", sf::Style::Close);
+    std::vector<Texture> usingTextures = initTextures();
 
-    sf::Texture onscyweld;
-    if (onscyweld.loadFromFile("src/snus.png")) {
-        printf("loaded");
-    }
-    sf::Sprite snusprite(onscyweld);
-    snusprite.scale(sf::Vector2f(2,5));
+    sf::Texture snustexture = getTextureById(usingTextures, "snus");
+    sf::Sprite snusprite(snustexture);
+    snusprite.scale(sf::Vector2f(1.8,10));
+
+    sf::Texture playerTexture = getTextureById(usingTextures, "player");
+    /*Player player(playerTexture);
+    sf::Vector2f playerSize = player.getPlayerSize();*/
+
+    Board board{ 20.0,20.0,520.0,650.0 };
+    sf::RectangleShape boardShape;
+    boardShape.setSize(sf::Vector2f(board.width, board.height));
+    boardShape.setPosition(sf::Vector2f(board.x, board.y));
+    boardShape.setFillColor(sf::Color(0, 0, 0, 0));
+    boardShape.setOutlineColor(sf::Color::Black);
+    boardShape.setOutlineThickness(2);
+
+    Player player(playerTexture);
 
     sf::Clock clock;
 
@@ -35,7 +168,6 @@ int main() {
     }
 
     bool snus = false;
-
     sf::String currKeyword;
     while (window.isOpen()) {
         sf::Time elapsedTime = clock.restart();
@@ -51,11 +183,12 @@ int main() {
                     DebugMode = !DebugMode;
                     printf("Debug mode value have been changed");
                 }
-            } else if(event.type == sf::Event::TextEntered) {
+            }
+            else if(event.type == sf::Event::TextEntered) {
                 currKeyword += event.text.unicode;
 
                 std::string word = std::string(currKeyword);
-                std::cout<< word <<std::endl;                
+                //std::cout<< word <<std::endl;                
 
                 if(currKeyword.find("givemesnus") != sf::String::InvalidPos and !snus) {
                     printf("snus set to true");
@@ -71,13 +204,45 @@ int main() {
 
             }
         }
+        /*player.move();
+
+        sf::Vector2f currentPos = player.getPlayerPos();
+        
+        if (currentPos.x >= board.width - playerSize.x) {
+            currentPos.x = board.width - playerSize.x - 1;
+            player.horizontalMove = 0;
+            player.setPos(currentPos);
+        }
+        else if (currentPos.x <= board.x) {
+            currentPos.x = board.x + 1;
+            player.horizontalMove = 0;
+            player.setPos(currentPos);
+        }
+        if (currentPos.y >= board.height - playerSize.y) {
+            currentPos.y = board.height - playerSize.y - 1;
+            player.verticalMove = 0;
+            player.setPos(currentPos);
+        }
+        else if (currentPos.y <= board.y) {
+            currentPos.y = board.y + 1;
+            player.verticalMove = 0;
+            player.setPos(currentPos);
+        } */
+
+        player.UpdatePosition(elapsedTime);
+
         sf::Color white = GetColor("white");
         window.clear(white);
 
-        //window.draw(sprite);
-        if(snus){
+        // drawing
+        if (snus) {
             window.draw(snusprite);
         }
+
+        window.draw(boardShape);
+        sf::Sprite PlayerSprite = player.GetSprite();
+        window.draw(PlayerSprite);
+
         if (DebugMode) {
             int fontsize = 18;
             sf::Vector2u TextSpriteSize = DebugFont.getTexture(fontsize).getSize();
