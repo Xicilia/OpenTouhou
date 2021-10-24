@@ -44,6 +44,8 @@ class Player : public Entity {
 
         void UpdatePosition(sf::Time ElapsedTime);
         Hitbox GetBoardHitbox() { return CurrentBoard->BoardHitBox; };
+
+        void IncreaseSpeed(float value);
     private:
         float speed;
 

@@ -66,7 +66,7 @@ Player::Player(sf::Texture texture,sf::Vector2f StartPosition,Board *board): Ent
     HorizontalMove = 0;
     IsShiftPressed = false;
 
-    speed = 1.f;
+    speed = 500.f;
 
     SetPos(StartPosition);
 
@@ -87,7 +87,7 @@ void Player::UpdatePosition(sf::Time ElapsedTime){
         CurrentSpeed = speed;
     }
 
-    float Increase = CurrentSpeed * ElapsedTime.asMilliseconds();
+    float Increase = CurrentSpeed * ElapsedTime.asSeconds();
 
     Hitbox PlayerHitbox = GetHitbox();
     Hitbox BoardHitBox = GetBoardHitbox();
@@ -113,4 +113,7 @@ void Player::UpdatePosition(sf::Time ElapsedTime){
 
     IncreasePos(sf::Vector2f(Increase * HorizontalMove,Increase * VerticalMove));
 
+}
+void Player::IncreaseSpeed(float value) {
+    speed += value;
 }

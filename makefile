@@ -30,7 +30,7 @@ LIB_FILES            := -lopenal32 -lsfml-system -lsfml-graphics -lsfml-window
 
 app: $(O_FILES)
 
-	g++ $^ -o $@ $(LIB_DIRECTORIES) $(LIB_FILES) $(LINKED_FLAGS)
+	g++ $^ -o OpenTouhou $(LIB_DIRECTORIES) $(LIB_FILES) $(LINKED_FLAGS)
 
 
 

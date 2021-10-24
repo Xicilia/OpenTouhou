@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <iostream>
+#include "math.h"
 
 #include "Entity.h"
 #include "Board.h"
@@ -82,7 +83,7 @@ int main() {
     }
 
     bool snus = false;
-    sf::String currKeyword;
+    sf::String command;
     while (window.isOpen()) {
         sf::Time elapsedTime = clock.restart();
 
@@ -95,23 +96,29 @@ int main() {
             else if(event.type == sf::Event::KeyPressed) {
                 if(event.key.code == sf::Keyboard::O){
                     DebugMode = !DebugMode;
-                    printf("Debug mode value have been changed");
+                    printf("Debug mode value have been changed\n");
+                } else if(event.key.code == sf::Keyboard::Numpad8) {
+                    if(DebugMode){
+                        player.IncreaseSpeed(10.0);
+                    }
+                } else if(event.key.code == sf::Keyboard::Numpad2) {
+                    if(DebugMode){
+                        player.IncreaseSpeed(-10.0);
+                    }
                 }
             }
             else if(event.type == sf::Event::TextEntered) {
-                currKeyword += event.text.unicode;
+                command += event.text.unicode;             
 
-                std::string word = std::string(currKeyword);
-                //std::cout<< word <<std::endl;                
-
-                if(currKeyword.find("givemesnus") != sf::String::InvalidPos and !snus) {
-                    printf("snus set to true");
+                if(command.find("givemesnus") != sf::String::InvalidPos and !snus) {
+                    printf("snus set to true\n");
                     snus = true;
                     window.setTitle("OpenSnushou");
+                    command.clear();
                 }
 
-                if (currKeyword.getSize() >= 20) {
-                    currKeyword.clear();
+                if (command.getSize() >= 20) {
+                    command.erase(0);
                 }
 
                 
@@ -136,15 +143,26 @@ int main() {
         if (DebugMode) {
             int fontsize = 18;
             sf::Vector2u TextSpriteSize = DebugFont.getTexture(fontsize).getSize();
-
-            sf::Text elapsedTimeText;
             
+            //elapsed time
+            sf::Text elapsedTimeText;
             elapsedTimeText.setFont(DebugFont);
             elapsedTimeText.setString("time elapsed: " + std::to_string(elapsedTime.asMicroseconds()));
             elapsedTimeText.setCharacterSize(fontsize);
             elapsedTimeText.setFillColor(sf::Color::Black);
             elapsedTimeText.setPosition(sf::Vector2f(WindowWidth-TextSpriteSize.x * 2,WindowHeight-TextSpriteSize.y));
             window.draw(elapsedTimeText);
+
+            //player coords
+            sf::Text CoordsText;
+            CoordsText.setFont(DebugFont);
+            sf::Vector2f CurrentPlayerPosition = player.GetHitbox().Position;
+            
+            CoordsText.setString("x:" + std::to_string((int)round(CurrentPlayerPosition.x)) + " y:" + std::to_string((int)round(CurrentPlayerPosition.y)));
+            CoordsText.setCharacterSize(fontsize);
+            CoordsText.setFillColor(sf::Color::Black);
+            CoordsText.setPosition(sf::Vector2f(WindowWidth-TextSpriteSize.x * 2,WindowHeight-TextSpriteSize.y - 15));
+            window.draw(CoordsText);
 
             //drawing player hitbox
             sf::RectangleShape PlayerHitbox = CreateShapeFromHitbox(player.GetHitbox(),sf::Color::Red);
