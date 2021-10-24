@@ -3,90 +3,13 @@
 #include <iostream>
 
 #include "Entity.h"
+#include "Board.h"
+#include "Hitbox.h"
 
-/*class Player {
-
-    public:
-        float verticalMove;
-        float horizontalMove;
-        bool isShiftPressed;
-        Player(sf::Texture PlayerTexture) {
-            texture = PlayerTexture;
-
-            speed = 0.1f;
-            playerSprite = sf::Sprite(texture);
-            //playerSprite.resize(sf::Vector2f(PLAYERWIDTHCONSTANT,PLAYERHEIGHTCONSTANT));
-            float scaleWidth = PLAYERWIDTHCONSTANT / texture.getSize().x;
-            float scaleHeight = PLAYERHEIGHTCONSTANT / texture.getSize().y;
-            std::cout << "scaling player sprite width with " << scaleWidth << " scale" << std::endl;
-            std::cout << "scaling player sprite height with " << scaleHeight << " scale" << std::endl;
-            playerSprite.scale(sf::Vector2f(scaleWidth, scaleHeight));
-
-            verticalMove = 0;
-            horizontalMove = 0;
-            isShiftPressed = false;
-
-        }
-
-        sf::Vector2f getPlayerPos() {
-            return playerSprite.getPosition();
-        }
-        sf::Vector2f getPlayerSize() {
-            sf::Vector2u textureSize = texture.getSize();
-            sf::Vector2f spriteScale = playerSprite.getScale();
-
-            return sf::Vector2f(textureSize.x * spriteScale.x, textureSize.y * spriteScale.y);
-        }
-        void setPos(sf::Vector2f pos) {
-            playerSprite.setPosition(pos);
-        }
-        sf::Sprite getCurrentSpriteToDraw() {
-            return playerSprite;
-        }
-        void move() {
-
-            verticalMove = -sf::Keyboard::isKeyPressed(sf::Keyboard::Up) + sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
-            horizontalMove = sf::Keyboard::isKeyPressed(sf::Keyboard::Right) + -sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
-            isShiftPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
-
-            float currSpeed;
-            if (isShiftPressed) {
-                currSpeed = speed * 0.5;
-            }
-            else {
-                currSpeed = speed;
-            }
-
-            if (verticalMove) {
-                playerSprite.move(0, currSpeed * verticalMove);
-            }
-            if (horizontalMove) {
-                playerSprite.move(currSpeed * horizontalMove, 0);
-            }
-
-        }
-    private:
-        sf::Texture texture;
-        sf::Sprite playerSprite;
-        sf::IntRect playerRect;
-
-        float speed;
-}; */
 struct Texture {
     sf::Texture texture;
     std::string textureId;
 };
-
-struct Board {
-  
-    float x;
-    float y;
-    float width;
-    float height;
-
-};
-
-
 
 std::vector<std::pair<std::string,sf::Color>> Colors {std::make_pair("white",sf::Color(255,255,255,255))};
 
@@ -145,19 +68,10 @@ int main() {
     sf::Sprite snusprite(snustexture);
     snusprite.scale(sf::Vector2f(1.8,10));
 
+    Board CurrentBoard(sf::Vector2f(20,20),sf::Vector2f(520,650));
+
     sf::Texture playerTexture = getTextureById(usingTextures, "player");
-    /*Player player(playerTexture);
-    sf::Vector2f playerSize = player.getPlayerSize();*/
-
-    Board board{ 20.0,20.0,520.0,650.0 };
-    sf::RectangleShape boardShape;
-    boardShape.setSize(sf::Vector2f(board.width, board.height));
-    boardShape.setPosition(sf::Vector2f(board.x, board.y));
-    boardShape.setFillColor(sf::Color(0, 0, 0, 0));
-    boardShape.setOutlineColor(sf::Color::Black);
-    boardShape.setOutlineThickness(2);
-
-    Player player(playerTexture);
+    Player player(playerTexture,sf::Vector2f(250,250),&CurrentBoard);
 
     sf::Clock clock;
 
@@ -204,30 +118,6 @@ int main() {
 
             }
         }
-        /*player.move();
-
-        sf::Vector2f currentPos = player.getPlayerPos();
-        
-        if (currentPos.x >= board.width - playerSize.x) {
-            currentPos.x = board.width - playerSize.x - 1;
-            player.horizontalMove = 0;
-            player.setPos(currentPos);
-        }
-        else if (currentPos.x <= board.x) {
-            currentPos.x = board.x + 1;
-            player.horizontalMove = 0;
-            player.setPos(currentPos);
-        }
-        if (currentPos.y >= board.height - playerSize.y) {
-            currentPos.y = board.height - playerSize.y - 1;
-            player.verticalMove = 0;
-            player.setPos(currentPos);
-        }
-        else if (currentPos.y <= board.y) {
-            currentPos.y = board.y + 1;
-            player.verticalMove = 0;
-            player.setPos(currentPos);
-        } */
 
         player.UpdatePosition(elapsedTime);
 
@@ -239,7 +129,7 @@ int main() {
             window.draw(snusprite);
         }
 
-        window.draw(boardShape);
+        window.draw(CurrentBoard.BoardShape);
         sf::Sprite PlayerSprite = player.GetSprite();
         window.draw(PlayerSprite);
 
@@ -248,14 +138,19 @@ int main() {
             sf::Vector2u TextSpriteSize = DebugFont.getTexture(fontsize).getSize();
 
             sf::Text elapsedTimeText;
-
+            
             elapsedTimeText.setFont(DebugFont);
             elapsedTimeText.setString("time elapsed: " + std::to_string(elapsedTime.asMicroseconds()));
             elapsedTimeText.setCharacterSize(fontsize);
             elapsedTimeText.setFillColor(sf::Color::Black);
             elapsedTimeText.setPosition(sf::Vector2f(WindowWidth-TextSpriteSize.x * 2,WindowHeight-TextSpriteSize.y));
-
             window.draw(elapsedTimeText);
+
+            //drawing player hitbox
+            sf::RectangleShape PlayerHitbox = CreateShapeFromHitbox(player.GetHitbox(),sf::Color::Red);
+            sf::RectangleShape PlayerDetectHitbox = CreateShapeFromHitbox(player.GetDetectHitbox(),sf::Color::Black);
+            window.draw(PlayerHitbox);
+            window.draw(PlayerDetectHitbox);
         }
         window.display();
     } 
