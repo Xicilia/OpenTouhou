@@ -10,7 +10,6 @@ class Entity {
     public:
         
         sf::Sprite GetSprite() { return Sprite; };
-        //sf::FloatRect GetCollideBox() { return CollideBox; };
         Hitbox GetHitbox() { return MainHitbox; };
         CircleHitbox GetDetectHitbox() { return DetectHitbox; };
 
@@ -23,8 +22,7 @@ class Entity {
 
         void IncreasePos(sf::Vector2f IncreasingValue);
         
-        //sf::Vector2f Position;
-        //sf::Vector2f CollideBoxSize;
+        sf::Vector2f LastDetectedPos; // if player staying detect pos wont apply
     private:
         Hitbox MainHitbox;
         CircleHitbox DetectHitbox;
@@ -32,7 +30,7 @@ class Entity {
 
         sf::Texture UsingTexture;
         sf::Sprite Sprite;
-        //sf::FloatRect CollideBox;
+
         void DetectApplyPos();
 
 

@@ -14,7 +14,7 @@ struct Texture {
 
 std::vector<std::pair<std::string,sf::Color>> Colors {std::make_pair("white",sf::Color(255,255,255,255))};
 
-std::vector<std::pair<std::string,std::string>> texturesToInit{ std::make_pair("snus","src/data/snus.png"),std::make_pair("player","src/data/snus.png") };
+std::vector<std::pair<std::string,std::string>> texturesToInit{ std::make_pair("snus","src/data/snus.png"),std::make_pair("player","src/data/TestPlayer.png") };
 
 std::vector<Texture> initTextures() {
     
@@ -99,11 +99,11 @@ int main() {
                     printf("Debug mode value have been changed\n");
                 } else if(event.key.code == sf::Keyboard::Numpad8) {
                     if(DebugMode){
-                        player.IncreaseSpeed(10.0);
+                        player.IncreaseSpeed(50.0);
                     }
                 } else if(event.key.code == sf::Keyboard::Numpad2) {
                     if(DebugMode){
-                        player.IncreaseSpeed(-10.0);
+                        player.IncreaseSpeed(-50.0);
                     }
                 }
             }
