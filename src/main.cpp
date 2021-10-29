@@ -166,7 +166,7 @@ int main() {
 
             //drawing player hitbox
             sf::RectangleShape PlayerHitbox = CreateShapeFromHitbox(player.GetHitbox(),sf::Color::Red);
-            sf::RectangleShape PlayerDetectHitbox = CreateShapeFromHitbox(player.GetDetectHitbox(),sf::Color::Black);
+            sf::CircleShape PlayerDetectHitbox = CreateShapeFromHitbox(player.GetDetectHitbox(),sf::Color::Black);
             window.draw(PlayerHitbox);
             window.draw(PlayerDetectHitbox);
         }

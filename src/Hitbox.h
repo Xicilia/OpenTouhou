@@ -21,4 +21,18 @@ class Hitbox {
 
 };
 
+class CircleHitbox {
+
+    public:
+        sf::Vector2f Position;
+        float Radius;
+
+        CircleHitbox() {};
+
+        CircleHitbox(float StartRadius);
+        CircleHitbox(float StartRadius, sf::Vector2f StartPosition);
+
+        friend sf::CircleShape CreateShapeFromHitbox(CircleHitbox UsingHitbox,sf::Color UsingColor);
+};
+
 #endif

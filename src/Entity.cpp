@@ -4,8 +4,8 @@
 #include <iostream>
 #include "cmath"
 
-#define PLAYERWIDTHCONSTANT 100.0
-#define PLAYERHEIGHTCONSTANT 100.0
+#define PLAYERWIDTHCONSTANT 50.0
+#define PLAYERHEIGHTCONSTANT 80.0
 
 Entity::Entity(sf::Texture texture) {
 
@@ -24,9 +24,11 @@ Entity::Entity(sf::Texture texture) {
     MainHitbox = Hitbox(HitboxSize);
 
     //creating hitbox for missles collide
-    sf::Vector2f DetectHitboxSize = sf::Vector2f(HitboxSize.x / 3, HitboxSize.y / 3);
-    sf::Vector2f DetectHitboxPosition = sf::Vector2f(HitboxSize.x / 2,HitboxSize.y / 2);
-    DetectHitbox = Hitbox(DetectHitboxSize,DetectHitboxPosition);
+    //sf::Vector2f DetectHitboxSize = sf::Vector2f(HitboxSize.x / 3, HitboxSize.y / 3);
+    DetectHitboxScale = 8;
+    float DetectHitboxRadius = PLAYERWIDTHCONSTANT / DetectHitboxScale;
+    //sf::Vector2f DetectHitboxPosition = sf::Vector2f(HitboxSize.x / 2,HitboxSize.y / 2);
+    DetectHitbox = CircleHitbox(DetectHitboxRadius);
 
 }
 
@@ -36,8 +38,8 @@ sf::Vector2f Entity::GetSpriteScale() {
 
 void Entity::DetectApplyPos() {
     //DetectHitbox.Position = MainHitbox.Position;
-    DetectHitbox.Position = sf::Vector2f(MainHitbox.Position.x + MainHitbox.Size.x / 3, 
-    MainHitbox.Position.y + MainHitbox.Size.y / 3);
+    DetectHitbox.Position = sf::Vector2f(MainHitbox.Position.x + MainHitbox.Size.x / (DetectHitboxScale / 3), 
+    MainHitbox.Position.y + MainHitbox.Size.y / (DetectHitboxScale / 3));
 }
 
 void Entity::SetPos(sf::Vector2f pos) {

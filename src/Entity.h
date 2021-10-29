@@ -12,7 +12,7 @@ class Entity {
         sf::Sprite GetSprite() { return Sprite; };
         //sf::FloatRect GetCollideBox() { return CollideBox; };
         Hitbox GetHitbox() { return MainHitbox; };
-        Hitbox GetDetectHitbox() { return DetectHitbox; };
+        CircleHitbox GetDetectHitbox() { return DetectHitbox; };
 
         Entity(sf::Texture texture);
         
@@ -27,7 +27,8 @@ class Entity {
         //sf::Vector2f CollideBoxSize;
     private:
         Hitbox MainHitbox;
-        Hitbox DetectHitbox;
+        CircleHitbox DetectHitbox;
+        float DetectHitboxScale;
 
         sf::Texture UsingTexture;
         sf::Sprite Sprite;
